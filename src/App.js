@@ -23,7 +23,8 @@ function App() {
   return (
     <div className="app">
       <div className="sidebar">
-        <FriendsList />;
+        <FriendsList />
+        <FormAddFriend />
       </div>
     </div>
   );
@@ -34,14 +35,47 @@ export default App;
 function FriendsList() {
   const friends = initialFriends;
 
+  console.log(friends);
   return (
-    <ul>
+    <div>
       {friends.map((friend) => (
         <Friend friend={friend} key={friend.id} />
+        // <Friend friend={friend.name} key={friend.id} />
       ))}
-    </ul>
+    </div>
   );
 }
+
 function Friend({ friend }) {
-  return <li></li>;
+  return (
+    <li>
+      <img src={friend.image} alt={friend.name} />
+      <h3> {friend.name} </h3>
+      {friend.balance < 0 && (
+        <p className="red">
+          Ты должен {friend.name}
+          {friend.balance}
+        </p>
+      )}
+      {friend.balance > 0 && (
+        <p className="green">
+          Ты должен {friend.name}
+          {friend.balance}
+        </p>
+      )}
+      {friend.balance === 0 && <p>Ты и {friend.name} нечего не должны</p>}
+      <button className="button">select</button>
+    </li>
+  );
+}
+
+function FormAddFriend() {
+  return (
+    <form className="form-add-friend">
+      <label>Имя друга</label>
+      <input type="text" />
+      <label>Ссылка на картинку</label>
+      <input type="text" />
+    </form>
+  );
 }
