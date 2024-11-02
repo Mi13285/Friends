@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const initialFriends = [
   {
     id: 118836,
@@ -18,19 +20,26 @@ const initialFriends = [
     balance: 0,
   },
 ];
-
 function App() {
+  const [showAddFriend, setShowAddFriend] = useState(true);
+
   return (
     <div className="app">
       <div className="sidebar">
         <FriendsList />
-        <FormAddFriend />
+        {showAddFriend && <FormAddFriend />}
+        {/* <Button /> */}
       </div>
+      <FormSplitBill />
     </div>
   );
 }
 
 export default App;
+
+function Button({ children }) {
+  return <button className="button">{children}</button>;
+}
 
 function FriendsList() {
   const friends = initialFriends;
@@ -64,7 +73,7 @@ function Friend({ friend }) {
         </p>
       )}
       {friend.balance === 0 && <p>Ты и {friend.name} нечего не должны</p>}
-      <button className="button">select</button>
+      <button className="button">select </button>
     </li>
   );
 }
@@ -74,8 +83,32 @@ function FormAddFriend() {
     <form className="form-add-friend">
       <label>Имя друга</label>
       <input type="text" />
-      <label>Ссылка на картинку</label>
+      <label>
+        Ссылка на картинку
+        {}
+      </label>
       <input type="text" />
+      <button className="button">add</button>
+    </form>
+  );
+}
+
+function FormSplitBill() {
+  return (
+    <form className="form-split-bill">
+      <h2>Раздели счет с Х</h2>
+      <label>Сумма счета</label>
+      <input type="text" />
+      <label>Твои расходы</label>
+      <input type="text" />
+      <label>Х расходы</label>
+      <input type="text" disabled />
+      <label>Кто оплачивает счет</label>
+      <select>
+        <option value="user">Ты</option>
+        <option value="friend">Х</option>
+      </select>
+      <button className="button">Разделить счет</button>
     </form>
   );
 }
