@@ -21,14 +21,20 @@ const initialFriends = [
   },
 ];
 function App() {
-  const [showAddFriend, setShowAddFriend] = useState(true);
+  const [showAddFriend, setShowAddFriend] = useState(false);
+
+  function handleShowAddFriend() {
+    setShowAddFriend((show) => !show);
+  }
 
   return (
     <div className="app">
       <div className="sidebar">
         <FriendsList />
         {showAddFriend && <FormAddFriend />}
-        {/* <Button /> */}
+        <Button onClick={handleShowAddFriend}>
+          {showAddFriend ? "закрыть" : "Добавить друга"}
+        </Button>
       </div>
       <FormSplitBill />
     </div>
@@ -37,8 +43,12 @@ function App() {
 
 export default App;
 
-function Button({ children }) {
-  return <button className="button">{children}</button>;
+function Button({ children, onClick }) {
+  return (
+    <button onClick={onClick} className="button">
+      {children}
+    </button>
+  );
 }
 
 function FriendsList() {
@@ -56,6 +66,7 @@ function FriendsList() {
 }
 
 function Friend({ friend }) {
+  console.log(friend);
   return (
     <li>
       <img src={friend.image} alt={friend.name} />
@@ -73,22 +84,29 @@ function Friend({ friend }) {
         </p>
       )}
       {friend.balance === 0 && <p>Ты и {friend.name} нечего не должны</p>}
-      <button className="button">select </button>
+      <Button>select1</Button>
     </li>
   );
 }
 
 function FormAddFriend() {
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+
   return (
     <form className="form-add-friend">
       <label>Имя друга</label>
-      <input type="text" />
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
       <label>
         Ссылка на картинку
         {}
       </label>
       <input type="text" />
-      <button className="button">add</button>
+      <Button>Добавить</Button>
     </form>
   );
 }
