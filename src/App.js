@@ -22,7 +22,7 @@ const initialFriends = [
 ];
 function App() {
   const [friends, setFriend] = useState(initialFriends);
-
+  const [selectedFriend, setSelectedFriend] = useState(null);
   const [showAddFriend, setShowAddFriend] = useState(false);
 
   function handleShowAddFriend() {
@@ -33,16 +33,25 @@ function App() {
     setFriend((friends) => [...friends, friend]);
   }
 
+  function handleSelection(friend) {
+    setSelectedFriend((cur) => (cur?.id === friend.id ? null : friend));
+    setShowAddFriend(false);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
-        <FriendsList friends={friends} />
+        <FriendsList
+          friends={friends}
+          onSelection={handleSelection}
+          selectedFriend={selectedFriend}
+        />
         {showAddFriend && <FormAddFriend onAddFriend={handleAddFriend} />}
         <Button onClick={handleShowAddFriend}>
           {showAddFriend ? "закрыть" : "Добавить друга"}
         </Button>
       </div>
-      <FormSplitBill />
+      {selectedFriend && <FormSplitBill selectedFriend={selectedFriend} />}
     </div>
   );
 }
@@ -57,22 +66,28 @@ function Button({ children, onClick }) {
   );
 }
 
-function FriendsList({ friends }) {
+function FriendsList({ friends, onSelection, selectedFriend }) {
   console.log(friends);
   return (
-    <div>
+    <ul>
       {friends.map((friend) => (
-        <Friend friend={friend} key={friend.id} />
+        <Friend
+          friend={friend}
+          key={friend.id}
+          onSelection={onSelection}
+          selectedFriend={selectedFriend}
+        />
         // <Friend friend={friend.name} key={friend.id} />
       ))}
-    </div>
+    </ul>
   );
 }
 
-function Friend({ friend }) {
-  console.log(friend);
+function Friend({ friend, onSelection, selectedFriend }) {
+  const isSelected = selectedFriend?.id === friend.id;
+
   return (
-    <li>
+    <li className={isSelected ? "selected" : ""}>
       <img src={friend.image} alt={friend.name} />
       <h3> {friend.name} </h3>
       {friend.balance < 0 && (
@@ -88,7 +103,9 @@ function Friend({ friend }) {
         </p>
       )}
       {friend.balance === 0 && <p>Ты и {friend.name} нечего не должны</p>}
-      <Button>select1</Button>
+      <Button onClick={() => onSelection(friend)}>
+        {isSelected ? "close" : "select"}
+      </Button>
     </li>
   );
 }
@@ -136,21 +153,51 @@ function FormAddFriend({ onAddFriend }) {
   );
 }
 
-function FormSplitBill() {
+function FormSplitBill({ selectedFriend }) {
+  const [bill, setBill] = useState("");
+  const [paidByUser, setPaidByUser] = useState("");
+  const paidByFriend = bill ? bill - paidByUser : "";
+  const [whoIsPaying, setWhoIsPaying] = useState("user");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!paidByUser || !bill) return;
+  }
+
   return (
-    <form className="form-split-bill">
-      <h2>Раздели счет с Х</h2>
+    <form className="form-split-bill" onSubmit={handleSubmit}>
+      <h2>Раздели счет с {selectedFriend.name}</h2>
+
       <label>Сумма счета</label>
-      <input type="text" />
+      <input
+        type="text"
+        value={bill}
+        onChange={(e) => setBill(Number(e.target.value))}
+      />
+
       <label>Твои расходы</label>
-      <input type="text" />
-      <label>Х расходы</label>
-      <input type="text" disabled />
+      <input
+        type="text"
+        value={paidByUser}
+        onChange={(e) =>
+          setPaidByUser(
+            Number(e.target.value) > bill ? paidByUser : Number(e.target.value)
+          )
+        }
+      />
+
+      <label>{selectedFriend.name}расходы</label>
+      <input type="text" disabled value={paidByFriend} />
+
       <label>Кто оплачивает счет</label>
-      <select>
+      <select
+        value={whoIsPaying}
+        onChange={(e) => setWhoIsPaying(e.target.value)}
+      >
         <option value="user">Ты</option>
-        <option value="friend">Х</option>
+        <option value="friend">{selectedFriend.name}</option>
       </select>
+
       <button className="button">Разделить счет</button>
     </form>
   );
