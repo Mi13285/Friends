@@ -93,7 +93,6 @@ function FriendsList({ friends, onSelection, selectedFriend }) {
           onSelection={onSelection}
           selectedFriend={selectedFriend}
         />
-        // <Friend friend={friend.name} key={friend.id} />
       ))}
     </ul>
   );
